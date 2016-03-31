@@ -42,7 +42,7 @@
                             </div>
                         </div>
                         <div class="row lite-gray h45">
-                            <button type="button" class="btn btn-default orange-button">Сохранить</button>
+                            <button id="buttonSave" type="button" class="btn btn-default orange-button">Сохранить</button>
                         </div>
                     </div>
                 </div>
@@ -56,6 +56,15 @@
                 <img id="photo" src="{{photo_50}}" alt="" class="img-circle">
                 <p>{{first_name}} {{last_name}}</p>
                 <span data-id="addFriend" class="glyphicon glyphicon-plus friend-ico"></span>
+              </li>
+            {{/each}}
+    </script>
+    <script type="text/x-handlebars-template" id="friendItemTemplateRight">
+            {{#each list}}
+              <li id="friendListItem" class="list-group-item h60 friend div-bottom" data-uid="{{uid}}">
+                <img id="photo" src="{{photo_50}}" alt="" class="img-circle">
+                <p>{{first_name}} {{last_name}}</p>
+                <span data-id="addFriend" class="glyphicon glyphicon-remove friend-ico"></span>
               </li>
             {{/each}}
     </script>

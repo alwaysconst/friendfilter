@@ -24,52 +24,59 @@ new Promise(function (resolve) {
             if (response.error) {
                 reject(new Error(response.error.error_msg));
             } else {
+                //Получаем данные из API и сравниваем их с localstorage 
+//                localStorage.setItem( 'friends', JSON.stringify( response.response ) ); // записываем данные в localstorage
+                
+//                addedFriends = JSON.parse( localStorage.getItem( 'friends' ) ); // распарсиваем данные из localstorage
+//                console.log(friends);
+                
+//                localStorage.clear(); // очищаем localstorage
+                
+/*--------------------ПОЛУЧАЕМ ДАННЫЕ ИЗ API И РАЗНОСИМ ИХ В ПРАВЫЙ И ЛЕВЫЙ СТОЛБЦЫ--------------------*/
+                var friendsleft = [];
+                    friendsRight = [];
+                    allFriends = response.response;
+                    addedFriends = JSON.parse( localStorage.getItem( 'friends' ) );
+                
+                allFriends.forEach(function (allFriends) {
+                   if (addedFriends) {
+                       var checker = false;
 
-                var source = friendItemTemplateLeft.innerHTML,
-                    templateFn = Handlebars.compile(source),
-                    template = templateFn({list: response.response});
+                       for (var i = 0; i < addedFriends.length; i++) {
+                            if (allFriends.uid === parseFloat(addedFriends[i].uid)){
+                                friendsRight.push(allFriends);
+                                checker = true;
+                                return;
+                            } 
+                           else {
+                                checker = false;
+                            }
+                       }
+                       
+                       if (checker === true) {
+                           friendsRight.push(allFriends);
+                       }
+                       if (checker === false) {
+                           friendsleft.push(allFriends);
+                       }
+                       
+                   } else {
+                       friendsleft.push(allFriends);
+                   }
+               })
+
+/*--------------------ВСТАВЛЯЕМ ДАННЫЕ В ШАБЛОН1--------------------*/
+                var colLeft = friendItemTemplateLeft.innerHTML,
+                    templateFn = Handlebars.compile(colLeft),
+                    template = templateFn({list: friendsleft});
                 friendList.innerHTML = template;
                 
-//                friendList.addEventListener('click', function(e){
-//                    friendFilter.innerHTML = e.target.parentNode.outerHTML;
-//                    
-//                });
-//                console.log(friendFilter.innerHTML);
-                
-                friendList.onclick = function(event) {
-                    var target = event.target; 
+/*--------------------ВСТАВЛЯЕМ ДАННЫЕ В ШАБЛОН2--------------------*/
+                var colRight = friendItemTemplateRight.innerHTML,
+                    templateFn = Handlebars.compile(colRight),
+                    template = templateFn({list: friendsRight});
+                friendFilter.innerHTML = template;
 
-                    if (target.tagName != 'SPAN') return;
-                    target.dataset = 'delFriend';
-                    target.classList.remove("glyphicon-plus");
-                    target.classList.add("glyphicon-remove"); friendFilter.insertAdjacentHTML("beforeEnd",target.parentNode.outerHTML);
-                    target.parentNode.outerHTML = '';
-                };
-                
-                friendFilter.onclick = function(event) {
-                    var target = event.target; 
-
-                    if (target.tagName != 'SPAN') return;
-                    target.dataset = 'addFriend';
-                    target.classList.remove("glyphicon-remove");
-                    target.classList.add("glyphicon-plus"); friendList.insertAdjacentHTML("beforeEnd",target.parentNode.outerHTML);
-                    target.parentNode.outerHTML = '';
-                };
-                
-//                var friendArr = [];
-//                friendList.addEventListener('click', 
-//                function () {
-//                friendArr.push(document.getElementById('friendListItem')),
-//                    
-//                    friendFilter.insertAdjacentHTML("beforeEnd", friendArr.innerHTML);
-//                    console.log(friendArr);
-//                })
-                 
-                
-                
-                
-                
-                
                 resolve();
             }
         });
@@ -77,3 +84,37 @@ new Promise(function (resolve) {
 }).catch(function(e) {
     alert('Ошибка: ' + e.message);
 });
+
+/*--------------------ОБРАБАТЫВАЕМ КЛИК НА "+"--------------------*/
+                friendList.onclick = function(event) {
+                    var target = event.target; 
+                    if (target.tagName != 'SPAN') return;
+//                    target.dataset = 'delFriend';
+                    target.classList.remove("glyphicon-plus");
+                    target.classList.add("glyphicon-remove");
+                    friendFilter.insertAdjacentHTML("afterBegin",target.parentNode.outerHTML);
+                    target.parentNode.outerHTML = '';
+                };
+/*--------------------ОБРАБАТЫВАЕМ КЛИК НА "X"--------------------*/
+                friendFilter.onclick = function(event) {
+                    var target = event.target; 
+
+                    if (target.tagName != 'SPAN') return;
+//                    target.dataset = 'addFriend';
+                    target.classList.remove("glyphicon-remove");
+                    target.classList.add("glyphicon-plus");
+                    friendList.insertAdjacentHTML("afterBegin",target.parentNode.outerHTML);
+                    target.parentNode.outerHTML = '';
+                };
+/*--------------------ОБРАБАТЫВАЕМ КЛИК НА "СОХРАНИТЬ"--------------------*/
+                buttonSave.onclick = function (event) {
+                    
+                    uidList = [];
+                    
+                    newArr = friendFilter.children;
+                    for(var i = 0; i < newArr.length ; i++ ) {
+                        uidList.push(newArr[i].dataset);
+                    }
+                    console.log(uidList)
+                    localStorage.setItem( 'friends', JSON.stringify( uidList ) );
+                }
