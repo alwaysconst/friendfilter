@@ -27,6 +27,12 @@ body {
     text-align: left;
 }
 
+.list-group {
+    height: 100%;
+    padding-left: 0;
+    margin: 0;
+}
+
 .friendfilter {
     width: 620px;
     min-height: 490px;

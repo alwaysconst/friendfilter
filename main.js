@@ -24,46 +24,39 @@ new Promise(function (resolve) {
             if (response.error) {
                 reject(new Error(response.error.error_msg));
             } else {
-                //Получаем данные из API и сравниваем их с localstorage 
-//                localStorage.setItem( 'friends', JSON.stringify( response.response ) ); // записываем данные в localstorage
-                
-//                addedFriends = JSON.parse( localStorage.getItem( 'friends' ) ); // распарсиваем данные из localstorage
-//                console.log(friends);
-                
-//                localStorage.clear(); // очищаем localstorage
                 
 /*--------------------ПОЛУЧАЕМ ДАННЫЕ ИЗ API И РАЗНОСИМ ИХ В ПРАВЫЙ И ЛЕВЫЙ СТОЛБЦЫ--------------------*/
-                var friendsleft = [];
-                    friendsRight = [];
-                    allFriends = response.response;
-                    addedFriends = JSON.parse( localStorage.getItem( 'friends' ) );
+                var friendsleft = [],
+                    friendsRight = [],
+                    allFriends = response.response,
+                    addedFriends = JSON.parse(localStorage.getItem('friends'));
                 
                 allFriends.forEach(function (allFriends) {
-                   if (addedFriends) {
-                       var checker = false;
-
-                       for (var i = 0; i < addedFriends.length; i++) {
+                    if (addedFriends) {
+                        var checker = false;
+                        
+                        for (var i = 0; i < addedFriends.length; i++) {
                             if (allFriends.uid === parseFloat(addedFriends[i].uid)){
                                 friendsRight.push(allFriends);
                                 checker = true;
                                 return;
-                            } 
-                           else {
+                            } else {
                                 checker = false;
                             }
-                       }
-                       
-                       if (checker === true) {
-                           friendsRight.push(allFriends);
-                       }
-                       if (checker === false) {
-                           friendsleft.push(allFriends);
-                       }
-                       
-                   } else {
-                       friendsleft.push(allFriends);
-                   }
-               })
+                        }
+
+                        if (checker === true) {
+                            friendsRight.push(allFriends);
+                        }
+                        
+                        if (checker === false) {
+                            friendsleft.push(allFriends);
+                        }
+                        
+                    } else {
+                        friendsleft.push(allFriends);
+                    }
+                })
 
 /*--------------------ВСТАВЛЯЕМ ДАННЫЕ В ШАБЛОН1--------------------*/
                 var colLeft = friendItemTemplateLeft.innerHTML,
@@ -86,35 +79,59 @@ new Promise(function (resolve) {
 });
 
 /*--------------------ОБРАБАТЫВАЕМ КЛИК НА "+"--------------------*/
-                friendList.onclick = function(event) {
-                    var target = event.target; 
-                    if (target.tagName != 'SPAN') return;
-//                    target.dataset = 'delFriend';
-                    target.classList.remove("glyphicon-plus");
-                    target.classList.add("glyphicon-remove");
-                    friendFilter.insertAdjacentHTML("afterBegin",target.parentNode.outerHTML);
-                    target.parentNode.outerHTML = '';
-                };
+friendList.onclick = function(event) {
+    var target = event.target; 
+    if (target.tagName != 'SPAN') return;
+    target.classList.remove("glyphicon-plus");
+    target.classList.add("glyphicon-remove");
+    friendFilter.insertAdjacentHTML("afterBegin",target.parentNode.outerHTML);
+    target.parentNode.outerHTML = '';
+};
 /*--------------------ОБРАБАТЫВАЕМ КЛИК НА "X"--------------------*/
-                friendFilter.onclick = function(event) {
-                    var target = event.target; 
-
-                    if (target.tagName != 'SPAN') return;
-//                    target.dataset = 'addFriend';
-                    target.classList.remove("glyphicon-remove");
-                    target.classList.add("glyphicon-plus");
-                    friendList.insertAdjacentHTML("afterBegin",target.parentNode.outerHTML);
-                    target.parentNode.outerHTML = '';
-                };
+friendFilter.onclick = function(event) {
+    var target = event.target; 
+    if (target.tagName != 'SPAN') return;
+    target.classList.remove("glyphicon-remove");
+    target.classList.add("glyphicon-plus");
+    friendList.insertAdjacentHTML("afterBegin",target.parentNode.outerHTML);
+    target.parentNode.outerHTML = '';
+};
 /*--------------------ОБРАБАТЫВАЕМ КЛИК НА "СОХРАНИТЬ"--------------------*/
-                buttonSave.onclick = function (event) {
-                    
-                    uidList = [];
-                    
-                    newArr = friendFilter.children;
-                    for(var i = 0; i < newArr.length ; i++ ) {
-                        uidList.push(newArr[i].dataset);
-                    }
-                    console.log(uidList)
-                    localStorage.setItem( 'friends', JSON.stringify( uidList ) );
-                }
+buttonSave.onclick = function (event) {
+
+    uidList = [];
+
+    newArr = friendFilter.children;
+    for(var i = 0; i < newArr.length ; i++ ) {
+        uidList.push(newArr[i].dataset);
+    }
+    localStorage.setItem( 'friends', JSON.stringify( uidList ) );
+}
+/*--------------------DRAG & DROP--------------------*/
+var dragableLi
+function dragStart(ev) {
+    ev.dataTransfer.effectAllowed='move';
+    ev.dataTransfer.setData("text/html", ev.target.closest("li").getAttribute("data-uid"));
+    dragableLi = ev.target.closest("li");
+    return true;
+}
+function dragEnter(ev) {
+    event.preventDefault();
+    return true;
+}
+function dragOver(ev) {
+    event.preventDefault();
+}
+function dragDrop(ev) {
+    var data = ev.dataTransfer.getData("text/html");
+    ev.target.closest("ul").appendChild(document.getElementById(data));
+    if (ev.target.closest("ul").id === "friendFilter") {
+        dragableLi.lastElementChild.classList.remove("glyphicon-plus");
+        dragableLi.lastElementChild.classList.add("glyphicon-remove");
+    } else if (ev.target.closest("ul").id === "friendList") {
+        dragableLi.lastElementChild.classList.remove("glyphicon-remove");
+        dragableLi.lastElementChild.classList.add("glyphicon-plus");
+    }
+    ev.stopPropagation();
+    return false;
+}
