@@ -32,7 +32,9 @@ body {
     padding-left: 0;
     margin: 0;
 }
-
+.hide {
+    display: none;
+}
 .friendfilter {
     width: 620px;
     min-height: 490px;
@@ -40,7 +42,9 @@ body {
     border-radius: 10px;
     overflow:hidden;
 }
-
+.h30 {
+    height: 30px;
+}
 .h45 {
     height: 45px;
 }
@@ -62,7 +66,7 @@ body {
 }
 
 .scroll {
-    height: 355px;
+    height: 325px;
     overflow: hidden;
     overflow-y: auto;
     padding: 0 15px 0;
@@ -102,6 +106,16 @@ body {
     font-size:16px;
     font-weight:500;
     padding: 14px 0 0 15px;
+}
+.white-head{
+    border:none;
+    border-radius: none;
+    border-bottom: #f0f0f0 solid 1px;
+    color: #4f4f4f;
+    font-weight:500;
+    font-size:12px;
+    margin: 0;
+    padding: 6px;
 }
 
 .lite-gray {

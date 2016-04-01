@@ -87,6 +87,7 @@ friendList.onclick = function(event) {
     friendFilter.insertAdjacentHTML("afterBegin",target.parentNode.outerHTML);
     target.parentNode.outerHTML = '';
 };
+
 /*--------------------ОБРАБАТЫВАЕМ КЛИК НА "X"--------------------*/
 friendFilter.onclick = function(event) {
     var target = event.target; 
@@ -96,17 +97,17 @@ friendFilter.onclick = function(event) {
     friendList.insertAdjacentHTML("afterBegin",target.parentNode.outerHTML);
     target.parentNode.outerHTML = '';
 };
+
 /*--------------------ОБРАБАТЫВАЕМ КЛИК НА "СОХРАНИТЬ"--------------------*/
 buttonSave.onclick = function (event) {
-
-    uidList = [];
-
-    newArr = friendFilter.children;
-    for(var i = 0; i < newArr.length ; i++ ) {
-        uidList.push(newArr[i].dataset);
+    var uidList = [],
+        uidArr = friendFilter.children;
+    for(var i = 0; i < uidArr.length ; i++ ) {
+        uidList.push(uidArr[i].dataset);
     }
     localStorage.setItem( 'friends', JSON.stringify( uidList ) );
 }
+
 /*--------------------DRAG & DROP--------------------*/
 var dragableLi
 function dragStart(ev) {
@@ -124,7 +125,7 @@ function dragOver(ev) {
 }
 function dragDrop(ev) {
     var data = ev.dataTransfer.getData("text/html");
-    ev.target.closest("ul").appendChild(document.getElementById(data));
+    ev.target.closest("ul").insertBefore(document.getElementById(data), ev.target.closest("ul").firstChild);
     if (ev.target.closest("ul").id === "friendFilter") {
         dragableLi.lastElementChild.classList.remove("glyphicon-plus");
         dragableLi.lastElementChild.classList.add("glyphicon-remove");
@@ -135,3 +136,51 @@ function dragDrop(ev) {
     ev.stopPropagation();
     return false;
 }
+
+/*--------------------ПОИСК ПО ФИО--------------------*/
+
+inputLeft.addEventListener("input", function () {
+    var inputLeftSearch = inputLeft.value;
+        leftList = friendList.children;
+    
+    if (inputLeftSearch) {
+        for (var i = 0; i < leftList.length; i++) {
+                leftList[i].classList.remove("hide");
+            var currentLi = leftList[i].innerText.toLowerCase();
+            if (!(currentLi.indexOf(inputLeftSearch) > -1)) {
+                leftList[i].classList.add("hide");
+            }
+        }
+    }
+    
+    if (!inputLeftSearch) {
+        for (var i = 0; i < leftList.length; i++) {
+                leftList[i].classList.remove("hide");
+        }
+    }
+
+    }
+)
+
+inputRight.addEventListener("input", function () {
+    var inputRightSearch = inputRight.value;
+        rightList = friendFilter.children;
+    
+    if (inputRightSearch) {
+        for (var i = 0; i < rightList.length; i++) {
+                rightList[i].classList.remove("hide");
+            var currentLi = rightList[i].innerText.toLowerCase();
+            if (!(currentLi.indexOf(inputRightSearch) > -1)) {
+                rightList[i].classList.add("hide");
+            }
+        }
+    }
+    
+    if (!inputRightSearch) {
+        for (var i = 0; i < rightList.length; i++) {
+                rightList[i].classList.remove("hide");
+        }
+    }
+
+    }
+)
