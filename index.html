@@ -21,7 +21,7 @@
                             <div class="col-md-6 div-right h400">
                                 <div class="row h45 lite-gray">
                                     <span class="glyphicon glyphicon-search search" aria-hidden="true"></span>
-                                    <input id="inputLeft" type="text" placeholder="Начните вводить имя друга">
+                                    <input id="inputLeft" type="text" placeholder="Начните вводить имя друга" data-list="friendList">
                                 </div>
                                 <div class="row h30 white-head">
                                     Ваши друзья
@@ -34,7 +34,7 @@
                             <div class="col-md-6 h400">
                                 <div class="row h45 lite-gray">
                                     <span class="glyphicon glyphicon-search search" aria-hidden="true"></span>
-                                    <input id="inputRight" type="text" placeholder="Начните вводить имя друга">
+                                    <input id="inputRight" type="text" placeholder="Начните вводить имя друга" data-list="friendFilter">
                                 </div>
                                 <div class="row h30 white-head">
                                     Друзья в списке
@@ -57,7 +57,7 @@
     <script type="text/x-handlebars-template" id="friendItemTemplateLeft">
             {{#each list}}
               <li id="{{uid}}" class="list-group-item h60 friend div-bottom" data-uid="{{uid}}" draggable="true" ondragstart="dragStart(event)">
-                <img id="photo" src="{{photo_50}}" alt="" class="img-circle">
+                <img id="photo" src="{{photo_50}}" alt="" class="img-circle"draggable="false">
                 <p>{{first_name}} {{last_name}}</p>
                 <span data-id="addFriend" class="glyphicon glyphicon-plus friend-ico"></span>
               </li>
@@ -66,7 +66,7 @@
     <script type="text/x-handlebars-template" id="friendItemTemplateRight">
             {{#each list}}
               <li id="{{uid}}" class="list-group-item h60 friend div-bottom" data-uid="{{uid}}" draggable="true" ondragstart="dragStart(event)">
-                <img id="photo" src="{{photo_50}}" alt="" class="img-circle">
+                <img id="photo" src="{{photo_50}}" alt="" class="img-circle" draggable="false">
                 <p>{{first_name}} {{last_name}}</p>
                 <span data-id="addFriend" class="glyphicon glyphicon-remove friend-ico"></span>
               </li>

@@ -24,44 +24,31 @@ new Promise(function (resolve) {
             if (response.error) {
                 reject(new Error(response.error.error_msg));
             } else {
-                
+                resolve(response);
+            }
+        });
+    });
+}).then (function (response) {
+            if (response.error) {
+                reject(new Error(response.error.error_msg));
+            } else {
 /*--------------------ПОЛУЧАЕМ ДАННЫЕ ИЗ API И РАЗНОСИМ ИХ В ПРАВЫЙ И ЛЕВЫЙ СТОЛБЦЫ--------------------*/
-                var friendsleft = [],
-                    friendsRight = [],
+                var friendsRight = [],
                     allFriends = response.response,
                     addedFriends = JSON.parse(localStorage.getItem('friends'));
                 
-                allFriends.forEach(function (allFriends) {
-                    if (addedFriends) {
-                        var checker = false;
-                        
-                        for (var i = 0; i < addedFriends.length; i++) {
-                            if (allFriends.uid === parseFloat(addedFriends[i].uid)){
-                                friendsRight.push(allFriends);
-                                checker = true;
-                                return;
-                            } else {
-                                checker = false;
-                            }
-                        }
-
-                        if (checker === true) {
-                            friendsRight.push(allFriends);
-                        }
-                        
-                        if (checker === false) {
-                            friendsleft.push(allFriends);
-                        }
-                        
-                    } else {
-                        friendsleft.push(allFriends);
+                allFriends = allFriends.filter(function (friend) {
+                    if (addedFriends.indexOf(friend.uid + "") > -1) {
+                        friendsRight.push(friend);
+                        return false; 
                     }
+                    return true;
                 })
 
 /*--------------------ВСТАВЛЯЕМ ДАННЫЕ В ШАБЛОН1--------------------*/
                 var colLeft = friendItemTemplateLeft.innerHTML,
                     templateFn = Handlebars.compile(colLeft),
-                    template = templateFn({list: friendsleft});
+                    template = templateFn({list: allFriends});
                 friendList.innerHTML = template;
                 
 /*--------------------ВСТАВЛЯЕМ ДАННЫЕ В ШАБЛОН2--------------------*/
@@ -69,11 +56,7 @@ new Promise(function (resolve) {
                     templateFn = Handlebars.compile(colRight),
                     template = templateFn({list: friendsRight});
                 friendFilter.innerHTML = template;
-
-                resolve();
             }
-        });
-    });
 }).catch(function(e) {
     alert('Ошибка: ' + e.message);
 });
@@ -84,8 +67,7 @@ friendList.onclick = function(event) {
     if (target.tagName != 'SPAN') return;
     target.classList.remove("glyphicon-plus");
     target.classList.add("glyphicon-remove");
-    friendFilter.insertAdjacentHTML("afterBegin",target.parentNode.outerHTML);
-    target.parentNode.outerHTML = '';
+    friendFilter.insertBefore(target.parentNode, friendFilter.firstElementChild);
 };
 
 /*--------------------ОБРАБАТЫВАЕМ КЛИК НА "X"--------------------*/
@@ -94,8 +76,7 @@ friendFilter.onclick = function(event) {
     if (target.tagName != 'SPAN') return;
     target.classList.remove("glyphicon-remove");
     target.classList.add("glyphicon-plus");
-    friendList.insertAdjacentHTML("afterBegin",target.parentNode.outerHTML);
-    target.parentNode.outerHTML = '';
+    friendList.insertBefore(target.parentNode, friendList.firstElementChild);
 };
 
 /*--------------------ОБРАБАТЫВАЕМ КЛИК НА "СОХРАНИТЬ"--------------------*/
@@ -103,7 +84,7 @@ buttonSave.onclick = function (event) {
     var uidList = [],
         uidArr = friendFilter.children;
     for(var i = 0; i < uidArr.length ; i++ ) {
-        uidList.push(uidArr[i].dataset);
+        uidList.push(uidArr[i].dataset.uid);
     }
     localStorage.setItem( 'friends', JSON.stringify( uidList ) );
 }
@@ -139,11 +120,10 @@ function dragDrop(ev) {
 
 /*--------------------ПОИСК ПО ФИО--------------------*/
 
-inputLeft.addEventListener("input", function () {
-    var inputLeftSearch = inputLeft.value;
-        leftList = friendList.children;
+document.addEventListener("input", function (e) {
+    var inputLeftSearch = e.target.value.trim();
+        leftList = document.getElementById(e.target.dataset.list).children;
     
-    if (inputLeftSearch) {
         for (var i = 0; i < leftList.length; i++) {
                 leftList[i].classList.remove("hide");
             var currentLi = leftList[i].innerText.toLowerCase();
@@ -151,36 +131,5 @@ inputLeft.addEventListener("input", function () {
                 leftList[i].classList.add("hide");
             }
         }
-    }
-    
-    if (!inputLeftSearch) {
-        for (var i = 0; i < leftList.length; i++) {
-                leftList[i].classList.remove("hide");
-        }
-    }
-
-    }
-)
-
-inputRight.addEventListener("input", function () {
-    var inputRightSearch = inputRight.value;
-        rightList = friendFilter.children;
-    
-    if (inputRightSearch) {
-        for (var i = 0; i < rightList.length; i++) {
-                rightList[i].classList.remove("hide");
-            var currentLi = rightList[i].innerText.toLowerCase();
-            if (!(currentLi.indexOf(inputRightSearch) > -1)) {
-                rightList[i].classList.add("hide");
-            }
-        }
-    }
-    
-    if (!inputRightSearch) {
-        for (var i = 0; i < rightList.length; i++) {
-                rightList[i].classList.remove("hide");
-        }
-    }
-
     }
 )
