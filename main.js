@@ -28,19 +28,21 @@ new Promise(function (resolve) {
             }
         });
     });
-}).then (function (response) {
-            if (response.error) {
-                reject(new Error(response.error.error_msg));
-            } else {
+}).then(function (response) {
+    if (response.error) {
+        reject(new Error(response.error.error_msg));
+    } else {
 /*--------------------ПОЛУЧАЕМ ДАННЫЕ ИЗ API И РАЗНОСИМ ИХ В ПРАВЫЙ И ЛЕВЫЙ СТОЛБЦЫ--------------------*/
                 var friendsRight = [],
                     allFriends = response.response,
                     addedFriends = JSON.parse(localStorage.getItem('friends'));
                 
                 allFriends = allFriends.filter(function (friend) {
-                    if (addedFriends.indexOf(friend.uid + "") > -1) {
-                        friendsRight.push(friend);
-                        return false; 
+                    if (addedFriends) {
+                        if (addedFriends.indexOf(friend.uid + "") > -1) {
+                            friendsRight.push(friend);
+                            return false; 
+                        }   
                     }
                     return true;
                 })
@@ -56,8 +58,10 @@ new Promise(function (resolve) {
                     templateFn = Handlebars.compile(colRight),
                     template = templateFn({list: friendsRight});
                 friendFilter.innerHTML = template;
-            }
-}).catch(function(e) {
+    }
+})
+    
+    .catch(function(e) {
     alert('Ошибка: ' + e.message);
 });
 
