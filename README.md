@@ -9,7 +9,7 @@ You can download it by typing the console command:
 git clone https://github.com/most-effect/friendfilter.git friendfilter && cd friendfilter
 ```
 Languages / technologies that have been used:
-* Vanilla JS
+* Vanilla JS (ES5)
 * VK API
 * Handlebars.JS
 * HTML5 Drag'n'Drop API
